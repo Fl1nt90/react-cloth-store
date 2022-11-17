@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithRedirect, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, reauthenticateWithRedirect } from "firebase/auth"; //import authentication libraries
+import { getAuth, signInWithRedirect, signInWithPopup, signInWithEmailAndPassword, GoogleAuthProvider, createUserWithEmailAndPassword, reauthenticateWithRedirect } from "firebase/auth"; //import authentication libraries
 import { getFirestore, doc, getDoc , setDoc } from 'firebase/firestore'; /* import method for FIRESTORE 
 NOTE: getDoc and setDoc are actually used to access and set document's data, not the documents themselves*/
 
@@ -38,7 +38,6 @@ export const db = getFirestore(); //i will pass this instance to various method 
 
 //create a method that take data from authentication and store into the database
 export const createUserDocumentFromAuth = async (userAuth) => {
-    console.log(userAuth);
     if (!userAuth) return;
     //1) check if there is an existing user reference
     //even if we don't have any collection/documents reference inside DB, firebase will automatically create it
@@ -63,9 +62,16 @@ export const createUserDocumentFromAuth = async (userAuth) => {
 };
 
 
- //create an user with email and password. This will return back and auth object of the user
+ //create an user with EMAIL and PASSWORD. This will return back and auth object of the user
 export const createAuthUserWithEmailAndPassword = async (email, password) => {
     if (!email || !password) return; 
     
     return await createUserWithEmailAndPassword(auth, email, password);
+}
+
+//SIGN-IN with EMAIL and PASSWORD
+export const signInAuthUserWithEmailAndPassword = async (email, password) => {
+    if (!email || !password) return; 
+    
+    return await signInWithEmailAndPassword(auth, email, password)
 }

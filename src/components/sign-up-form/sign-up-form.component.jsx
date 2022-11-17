@@ -24,10 +24,9 @@ const SignUpForm = () => {
     const handleSubmit = async (event) => { //when submitting the form
         event.preventDefault(); 
         if (password !== confirmPassowrd) {
-            alert('password do not match')
+            alert('Password does not match')
             return;
         };
-        console.log(displayName);
         try {
             const response = await createAuthUserWithEmailAndPassword(email, password); //created auth
             /* now create the user reference on the database. REMEMBER i don't have displayName from auth, 
@@ -58,7 +57,7 @@ const SignUpForm = () => {
 
     return (
         <div className="sign-up-container">
-            <h2>Don't have an account</h2>
+            <h2>Don't have an account?</h2>
             <span>Sign up with your email and password</span>
             <form onSubmit={handleSubmit}>  {/* call-back function when form is submitted  */}
                 {/*  i'm going to append to the data some attribute using the "name", so that i'll be able to identify 
