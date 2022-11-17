@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithRedirect, signInWithPopup, GoogleAuthProvider } from "firebase/auth"; //import authentication libraries
+import { getAuth, signInWithRedirect, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, reauthenticateWithRedirect } from "firebase/auth"; //import authentication libraries
 import { getFirestore, doc, getDoc , setDoc } from 'firebase/firestore'; /* import method for FIRESTORE 
 NOTE: getDoc and setDoc are actually used to access and set document's data, not the documents themselves*/
 
@@ -20,20 +20,26 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 
 // initialize a provider for authentication (KIND OF STANDARD CONFIGURATION)
-const provider = new GoogleAuthProvider(); 
+const googleProvider = new GoogleAuthProvider(); 
 //set up some custom parameters on this provider
-provider.setCustomParameters({
+googleProvider.setCustomParameters({
     prompt: 'select_account'
 });
+
 //export authentication to create the instance
-export const auth = getAuth();
-export const signInWithGooglePopup = () => signInWithPopup(auth, provider);
+export const auth = getAuth(); //basically the memory of the authentication
+export const signInWithGooglePopup = () => signInWithPopup(auth, googleProvider); //sign in with google popup
+export const signInWithGoogleRedirect = () => signInWithRedirect(auth, googleProvider); //sign in with google redirect
+
+
 
 //CREATE THE DATABASE
 export const db = getFirestore(); //i will pass this instance to various method every time i want to interact with the database
 
 //create a method that take data from authentication and store into the database
 export const createUserDocumentFromAuth = async (userAuth) => {
+    console.log(userAuth);
+    if (!userAuth) return;
     //1) check if there is an existing user reference
     //even if we don't have any collection/documents reference inside DB, firebase will automatically create it
     const userDocRef = doc(db, 'users', userAuth.uid) //arguments are the database, the collection, and an identifier
@@ -51,9 +57,15 @@ export const createUserDocumentFromAuth = async (userAuth) => {
             console.log('error creating the user', err.message);
         }
     };
-        console.log(userSnapshot.exists());
-
-    return userDocRef; //if the reference already exist, i return it (store it in sign-in component)
 
 
+    return userDocRef; //if the reference already exist, just return it (send it in sign-in component)
+};
+
+
+ //create an user with email and password. This will return back and auth object of the user
+export const createAuthUserWithEmailAndPassword = async (email, password) => {
+    if (!email || !password) return; 
+    
+    return await createUserWithEmailAndPassword(auth, email, password);
 }
